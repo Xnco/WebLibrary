@@ -1,0 +1,623 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>转盘抽奖</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+        <meta name = "format-detection" content="telephone = no" />
+        <link href="css/style.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body style="background-color:#000;">
+        <div class="mengban" style="display: none;"></div>
+        <!-- <div id="home" class="bg" style="display: none;"> -->
+        <div id="home" class="bg">
+
+            <!-- 头部 -->
+            <div id="header" class="head">
+                <div class="left"><img src="images/xzp.png" alt=""/></div>
+                <span class="sum">1</span>
+                <div class="right"><img src="images/yxgz.png" alt="" border="0" usemap="#Map"/>
+                    <map name="Map">
+                        <!-- 规则按钮 -->
+                        <area shape="rect" coords="69,-11,137,29" href="javascript:showPopupMessage('myrule');">
+                    </map>
+                </div>
+            </div>
+
+            <div id="ltpanel" class="panel"></div>
+
+            <div class="activate">
+            <ul>
+                <li id="header0">
+                    <img src="images/txw.png" alt="" class="c_1"/><br/>
+                    <span class="c_2">等待激活</span>
+                </li>
+                <li id="header1">
+                    <img src="images/txw.png" alt="" class="c_1"/><br/>
+                    <span class="c_2">等待激活</span>
+                </li>
+                <li id="header2">
+                    <img src="images/txw.png" alt="" class="c_1"/><br/>
+                    <span class="c_2">等待激活</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 游戏规则 -->
+        <div class="mymaj" style="display: none;" id="myrule">
+            <a class="fanhui" href="javascript:closeDiaglog('myrule');"><img src="images/fh.png" alt="" class="btn_fan"/></a>
+            <div class="rule_txt">
+                <p>一、活动时间</p>
+                <p>长期有效</p>
+                <p>二、活动对象</p>
+                <p>“永修麻将”的微信公众号关注用户。</p>
+                <p>三、活动规则</p>
+                <p>1.玩家通过点击“Go”启动转盘，获得幸运奖励。</p>
+                <p>2.玩家可通过收集麻将牌张按“刻子”“顺子”“杠子”要求来兑换房卡奖励。</p>
+                <p>3.若玩家获得“×2”，即玩家下次可获得双倍奖励。</p>
+                <p>4.每个玩家分享成功并成功被好友激活，可增加一次游戏机会；每日最多可被好友激活三次。</p>
+                <p>5.在法律允许的范围内，本次活动最终解释权归我方所有。</p>
+                <p>四、奖品发放</p>
+                <p>1.已注册游戏的玩家，获得的房卡奖励会立即发送至玩家账号上。</p>
+                <p>2.未注册游戏的玩家，获得的房卡奖励会暂时记录保存，直至玩家注册游戏并随后发放。</p>
+                <p>3.若奖励发放出现问题，可以联系后台客服与之解决。</p>
+            </div>
+        </div>
+
+        <!--弹窗-->  
+        <div class="xxcy-main" id="xxcy-main" style="display: none;">
+            <div class="xxcy">
+                <p>不要气馁，明天继续投票还可以抽奖哦。</p>
+            </div>
+            <a class="close_xxcy" href="javascript:chioe(0);"><img src="images/ok.png" class="ok_btn"/></a>
+        </div>
+
+        <script src="js/zepto.min.js"></script>
+        <script src="js/jquery-1.11.3.min.js" type="text/javascript"></script>
+        <script src="js/loteryround.min.js"></script>
+        <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+        <script>
+            document.documentElement.style.overflow = 'hidden';
+            function getVendorPrefix() {
+                var body, i, style, transition, vendor;
+                body = document.body || document.documentElement;
+                style = body.style;
+                transition = "transition";
+                vendor = ["Moz", "Webkit", "Khtml", "O", "ms"];
+                transition = transition.charAt(0).toUpperCase() + transition.substr(1);
+                i = 0;
+                while (i < vendor.length) {
+                    if (typeof style[vendor[i] + transition] === "string") {
+                        return vendor[i];
+                    }
+                    i++;
+                }
+                return false;
+            }
+            var screenWidth = document.body.clientWidth;
+            this.posFactor = 320 / screenWidth;
+            this.scale = 1 / this.posFactor;
+            $("body").css(getVendorPrefix() + "Transform", "scale(" + this.scale + ")");
+            $("body").css(getVendorPrefix() + "Transform-origin", "0 0");
+            $("body").css("width", "320px");
+            document.body.style.cssText += ';Transform: scale(' + this.scale + ');Transform-origin: 0 0;';
+			var host = "http://qyqihehoutai63254315.lightspeedgame.cn/qihe";
+			var data_host="http://qyqihexiazai202542215.lightspeedgame.cn/qihe";
+             //var host = "http://192.168.0.106/H5/MJbackup/jinxian_MJ/Trunk/mysql_connectdata";
+            //console.log(location.search);
+            function GetUrlParms()
+            {
+                var args = new Object();
+                var query = location.search.substring(1);//获取查询串
+                var pairs = query.split("&");//在逗号处断开
+                for (var i = 0; i < pairs.length; i++)
+                {
+                    var pos = pairs[i].indexOf('=');//查找name=value   
+                    if (pos == -1)
+                        continue;//如果没有找到就跳过   
+                    var argname = pairs[i].substring(0, pos);//提取name   
+                    var value = pairs[i].substring(pos + 1);//提取value   
+                    args[argname] = unescape(value);//存为属性   
+                }
+                return args;
+            }
+            $(".mengban").click(function() {
+                $(".mengban").hide();
+            });
+            var ji;
+            var has_pai = 0;
+            var query = GetUrlParms();
+            var share_openid = query.share_openid;
+            var share_unionid = query.share_unionid;
+            var unionid = query.unionid;
+            var openid = query.openid;
+            var headphotourl = query.headphotourl;
+            var nick_name = query.nick_name;
+            //console.log(nick_name+'+nick_name解码前');
+            nick_name = decodeURIComponent(nick_name);
+            //console.log(nick_name+'+nick_name解码后');
+            if (!share_unionid) {
+                share_unionid = '';
+                share_openid = '';
+            }//
+            if (!unionid) {
+            //  window.location.href = host + '/shareuse/queyou/oauth3.php?Status=4&share_unionid=' + share_unionid + "&share_openid=" + share_openid;
+            } else {
+                if (share_unionid) {//激活
+                    if (share_unionid != unionid) {
+                        var json;
+                        var xmlhttp;
+                        vershare();
+                        function vershare() {
+                            if (window.XMLHttpRequest) {
+                                xmlhttp = new XMLHttpRequest();
+                                if (xmlhttp.overrideMimeType) {
+                                    xmlhttp.overrideMimeType("text/html");
+                                }
+                            } else if (window.ActiveXObject) {
+                                var activeName = ["MSXML2.XMLHTTP", "Microsoft.XMLHTTP"];
+                                for (var i = 0; i > activeName.length(); i++) {
+                                    try {
+                                        xmlhttp = new ActiveXObject(activeName[i]);
+                                        break;
+                                    } catch (e) {
+                                    }
+                                }
+                            }
+                            xmlhttp.onreadystatechange = callbackshare;
+                            var urler = host + "/manager/turn_table.php?act=active&share_openid=" + share_openid + "&share_unionid=" + share_unionid + "&active_openid=" + openid + "&active_unionid=" + unionid;
+                            xmlhttp.open("get", urler, true);
+                            xmlhttp.send();
+                        }
+                        function callbackshare() {
+                            if (xmlhttp.readyState == 4) {
+                                if (xmlhttp.status == 200) {
+                                    var responsed = xmlhttp.responseText;
+                                    json = JSON.parse(responsed);
+                                    if (json.result == 0) {
+                                        $(".xxcy").html("<p>激活好友成功，快去玩大转盘赢取房卡吧！</p>");
+                                        $("#xxcy-main").show();
+                                    } else if (json.result == 1) {
+                                        $(".xxcy").html("<p>亲，不能自己给自己激活哦，快去请好友帮忙激活吧~</p>");
+                                        $("#xxcy-main").show();
+                                    } else if (json.result == 2) {
+                                        $(".xxcy").html("<p>亲，您的好友激活上限已满，请明天再来！</p>");
+                                        $("#xxcy-main").show();
+                                    } else if (json.result == 3) {
+                                        $(".xxcy").html("<p>亲，您已经给该好友激活过了哦~请明天再来!</p>");
+                                        $("#xxcy-main").show();
+                                    } else if (json.result == 4) {
+                                        $(".xxcy").html("<p>亲，您给好友激活的次数已经达到上限了哦~请明天再来!</p>");
+                                        $("#xxcy-main").show();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                onload();
+                mahjong();
+                sharefun();
+                activation();
+                $("#home").show();
+            }
+            var D_xsz = ['一', '二', '三', '四', '五', '六', '七', '八', '九'];
+            // 转盘初始化
+            // 第一个参数是奖品的个数
+            // 第二个是用来旋转的圆盘（指针不动）
+            var panel = new PanelLotery({
+                length: 6,
+                el: '#ltpanel'
+            });
+            
+            // 开始抽奖的点击事件
+            $('.panel-btn').on('click', function(event) {
+                
+                event.preventDefault();
+                if (panel.playing)
+                    return;
+
+                console.log("Go!");
+                $.ajax({
+                    type: 'get',
+                    url: host + '/manager/turn_table.php',
+                    data: {'openid': openid, 'act': 'turntable_request', 'unionid': unionid, 'nickname': nick_name},
+                    dataType: 'json',
+                    cache: false,
+                    success: function(o) {
+                        if (o.result == 0) {
+                            var numbel = parseInt(o.turntable_type);
+                            if (numbel == 0 && o.turntable_id == 0)
+                            {
+                                if (o.number == 4) {
+                                    //$(".close_xxcy").attr("href","javascript:chioe(0);");
+                                    $(".xxcy").html("<p>亲，您的转盘机会已达上限，请明天再来~</p>");
+                                    $("#xxcy-main").show();
+                                } else {
+                                    $(".close_xxcy").attr("href", "javascript:chioe(1);");
+                                    $(".xxcy").html("<p>亲，您已经没有次数了，快去完成任务增加抽奖次数吧~</p>");
+                                    $("#xxcy-main").show();
+                                }
+                            } else {
+                                // 转动成功
+                                var time = parseInt($(".sum").text()) - 1;
+                                if (time < 0) {
+                                    time = 0;
+                                }
+                                $(".sum").text(time);
+                                var n = parseInt(numbel.toString().substring(3, 4))-1;
+                                console.log(n);
+                                panel.playto(n, function() {
+                                    //奖励 - 具体奖励判断
+                                    if (n == 1) {
+                                        $(".xxcy").html("<p>恭喜您!获得一等奖！</p>");
+                                        $("#xxcy-main").show();
+                                    }
+                                });
+                                onload();
+                                mahjong();
+                            }
+                        }
+                    },
+                    error: function() {
+                        alert("请求超时，请稍后再试！");
+                    }
+                });
+            });
+            
+            // 展示规则
+            function showPopupMessage(node) {
+                // if (node == "mymahjong") {
+                //     $("#mymahjong").show();
+                // } else 
+                if (node == "myrule") {
+                    $("#myrule").show();
+                }
+            }
+
+            // 关闭弹窗
+            function closeDiaglog(node) {
+                $("#" + node).hide();
+                if (node == "mymahjong") {
+                    for (var k = 0; k < 4; k++) {
+                        $("#img" + k).removeClass("haveimg");
+                        $("#img" + k).html("<img src='images/fz.png' alt='' class='imgbg'/>");
+                    }
+                    ji = 0;
+                    mahjong();
+                }
+            }
+
+            // ?
+            function chioe(o) {
+                if (o == 1) {
+                    $(".close_xxcy").attr("href", "javascript:chioe(0);");
+                    $('.mengban').show();
+                }
+                $('#xxcy-main').hide();
+            }
+            /*  $('.close_xxcy').click(function(){
+             $('#xxcy-main').hide();
+             $('.mengban').show();
+             //$('#xxcy-main').show();
+             });*/
+
+            // 改变牌
+            function changepai(node) {
+                ji = 0;
+                for (var j = 0; j < 4; j++) {
+                    if (!$("#img" + j).hasClass("haveimg")) {
+                        //拥有的麻将数目-1
+                        ji++;
+                        if (ji == 1) {
+                            var now_num = parseInt($("#pai" + node + " span").text()) - 1;
+                            if (now_num < 1) {
+                                $("#pai" + node).attr("href", "javascript:;");
+                                $("#pai" + node + " span").hide();
+                            }
+                            $("#pai" + node + " span").text(now_num);
+                            $("#img" + j).addClass("haveimg");
+                            var no_type = Math.round(node / 100);//什么牌
+                            var no_name = parseInt(node.toString().substring(5, 6));//编号
+                            if (no_type == 1001) {
+                                $("#img" + j).html("<img src='images/MJ/MJ_" + no_name + "_TONG.png' alt='' class='imgbg' id='w" + node + "'/>");
+                            } else if (no_type == 1002) {
+                                $("#img" + j).html("<img src='images/MJ/MJ_" + no_name + "_TIAO.png' alt='' class='imgbg' id='w" + node + "'/>");
+                            } else if (no_type == 1004) {
+                                $("#img" + j).html("<img src='images/MJ/MJ_" + no_name + "_WAN.png' alt='' class='imgbg' id='w" + node + "'/>");
+                            } else if (no_type == 1005) {
+                                $("#img" + j).html("<img src='images/MJ/MJ_" + no_name + "_ZI.png' alt='' class='imgbg' id='w" + node + "'/>");
+                            }
+                            has_pai++;
+                            //console.log("已经换了多少张牌" + has_pai);
+                        }
+                    }
+                }
+                if (has_pai > 2) {
+                    $(".annue").html("<img src='images/active.png' alt='' class='btn_dh'/>");
+                    $(".annue").attr("href", "javascript:exchange();");
+                }
+            }
+            
+            // 回复?
+            function repay(no) {
+                var no_pai = 0;
+                if ($("#img" + no).hasClass("haveimg")) {
+                    var type_pai = parseInt($("#img" + no + " img").attr("id").substring(1));
+                    console.log("什么牌" + type_pai);
+                    var now_sum = parseInt($("#pai" + type_pai + " span").text()) + 1;
+                    $("#pai" + type_pai + " span").text(now_sum);
+                    if (now_sum > 0) {
+                        $("#pai" + type_pai).attr("href", "javascript:changepai(" + type_pai + ");");
+                        $("#pai" + type_pai + " span").show();
+                    }
+                    $("#img" + no).removeClass("haveimg");
+                    $("#img" + no).html("<img src='images/fz.png' alt='' class='imgbg'/>");
+                    has_pai--;
+                }
+                if (has_pai < 3) {
+                    $(".annue").html("<img src='images/dh.png' alt='' class='btn_dh'/>");
+                    $(".annue").attr("href", "javascript:;");
+                }
+            }
+
+            // 加载?
+            function onload() {
+                $.ajax({
+                    type: 'get',
+                    url: host + '/manager/turn_table.php',
+                    data: {'openid': openid, 'act': 'turntable_player', 'unionid': unionid, 'nick_name': nick_name, 'headphotourl': headphotourl},
+                    dataType: 'json',
+                    cache: false,
+                    success: function(o) {
+                        if (o.result == 0)
+                        {
+                            $(".sum").text(o.times);
+                        }
+                    },
+                    error: function() {
+                        alert("请求超时，请稍后再试！");
+                    }
+                });
+            }
+
+            //麻将数据
+            function mahjong() {
+                $.ajax({
+                    type: 'get',
+                    url: host + '/manager/turn_table.php',
+                    data: {'openid': openid, 'act': 'turntable_pai', 'unionid': unionid},
+                    dataType: 'json',
+                    cache: false,
+                    success: function(o) {
+                        if (o.result == 0)
+                        {
+                            setTimeout(function() {
+                                $(".num_xb").text(o.totalnum);
+                            }, 3000);
+                            var pai_info = o.pai_info;
+                            for (var i = 0; i < pai_info.length; i++) {
+                                if (pai_info[i].number > 0) {
+                                    $("#pai" + pai_info[i].turntable_id).attr("href", "javascript:changepai(" + pai_info[i].turntable_id + ");");
+                                    $("#pai" + pai_info[i].turntable_id).html("<span class='span0'>" + pai_info[i].number + "</span>");
+                                }
+                            }
+                        }
+                    },
+                    error: function() {
+                        alert("请求超时，请稍后再试！");
+                    }
+                });
+            }
+
+            //兑换
+            function exchange() {
+                var task = [];
+                for (var m = 0; m < 4; m++) {
+                    if ($("#img" + m).hasClass("haveimg")) {
+                        var type_nopai = parseInt($("#img" + m + " img").attr("id").substring(1));
+                        task.push(type_nopai);
+                    }
+                }
+                //console.log(task+'要提交的几张牌');
+                var arg = {};
+                for (var i = 1; i <= 3; i++) {
+                    arg["pai" + i] = task[(i - 1)];
+                }
+                if (task[3]) {
+                    arg["pai4"] = task[3];
+                }
+                arg["openid"] = openid;
+                arg["unionid"] = unionid;
+                arg["act"] = "turntable_exchange";
+                $.ajax({
+                    type: 'get',
+                    url: host + '/manager/turn_table.php',
+                    data: (arg),
+                    dataType: 'json',
+                    cache: false,
+                    success: function(o) {
+                        if (o.result == 0)
+                        {
+                            if (o.change_result == 1) {
+                                $(".xxcy").html("<p>恭喜您兑换杠子成功！获得奖励房卡5张</p>");
+                                $("#xxcy-main").show();
+                                $(".annue").html("<img src='images/dh.png' alt='' class='btn_dh'/>");
+                                $(".annue").attr("href", "javascript:;");
+                                for (var t = 0; t < 4; t++) {
+                                    $("#img" + t).removeClass("haveimg");
+                                    $("#img" + t).html("<img src='images/fz.png' alt='' class='imgbg'/>");
+                                }
+                                mahjong();
+                            } else if (o.change_result == 2) {
+                                $(".xxcy").html("<p>恭喜您兑换刻子成功！获得奖励房卡3张</p>");
+                                $("#xxcy-main").show();
+                                $(".annue").html("<img src='images/dh.png' alt='' class='btn_dh'/>");
+                                $(".annue").attr("href", "javascript:;");
+                                for (var t = 0; t < 4; t++) {
+                                    $("#img" + t).removeClass("haveimg");
+                                    $("#img" + t).html("<img src='images/fz.png' alt='' class='imgbg'/>");
+                                }
+                                mahjong();
+                            } else if (o.change_result == 3) {
+                                $(".xxcy").html("<p>恭喜您兑换顺子成功！获得奖励房卡2张</p>");
+                                $("#xxcy-main").show();
+                                $(".annue").html("<img src='images/dh.png' alt='' class='btn_dh'/>");
+                                $(".annue").attr("href", "javascript:;");
+                                for (var t = 0; t < 4; t++) {
+                                    $("#img" + t).removeClass("haveimg");
+                                    $("#img" + t).html("<img src='images/fz.png' alt='' class='imgbg'/>");
+                                }
+                                mahjong();
+                            } else {
+                                $(".xxcy").html("<p>亲，您的选牌不符合兑换规则，请重新选择！</p>");
+                                $("#xxcy-main").show();
+                            }
+                        } else {
+                            $(".xxcy").html("<p>亲，您的选牌数量不足，请重新选择！</p>");
+                            $("#xxcy-main").show();
+                        }
+                    },
+                    error: function() {
+                        alert("请求超时，请稍后再试！");
+                    }
+                });
+            }
+
+            //激活的数据
+            function activation() {
+                $.ajax({
+                    type: 'get',
+                    url: host + '/manager/turn_table.php',
+                    data: {'openid': openid, 'act': 'active_headurl', 'unionid': unionid},
+                    dataType: 'json',
+                    cache: false,
+                    success: function(o) {
+                        if (o.result == 0)
+                        {
+                            var headinfo = o.active_headinfo;
+                            var name = '';
+                            for (var g = 0; g < headinfo.length; g++) {
+                                if (headinfo[g].headphotourl) {
+                                    $("#header" + g + " img").attr("src", "http://" + headinfo[g].headphotourl);
+                                }
+                                console.log(headinfo[g].nick_name + "+激活者名字");
+                                if (headinfo[g].nick_name.length > 6) {
+                                    name = headinfo[g].nick_name.substring(0, 5) + ".."
+                                } else {
+                                    name = headinfo[g].nick_name;
+                                }
+                                $("#header" + g + " span").text(name);
+                            }
+                        }
+                    },
+                    error: function() {
+                        alert("请求超时，请稍后再试！");
+                    }
+                });
+            }
+
+            //分享
+            function sharefun() {
+                //var linktoshare = "http://cs007.damaigame.com";
+                var jsonshare;
+                var xmlhttp;
+                vershare();
+                function vershare() {
+                    if (window.XMLHttpRequest) {
+                        xmlhttp = new XMLHttpRequest();
+                        if (xmlhttp.overrideMimeType) {
+                            xmlhttp.overrideMimeType("text/html");
+                        }
+                    } else if (window.ActiveXObject) {
+                        var activeName = ["MSXML2.XMLHTTP", "Microsoft.XMLHTTP"];
+                        for (var i = 0; i > activeName.length(); i++) {
+                            try {
+                                xmlhttp = new ActiveXObject(activeName[i]);
+                                break;
+                            } catch (e) {
+                            }
+                        }
+                    }
+                    xmlhttp.onreadystatechange = callbackshare;
+                    console.log(nick_name + '+nick_name分享的名字');
+                    var urllet = host+"/shareuse/queyou/share_get.php?Status=4&openid=" + openid + "&unionid=" + unionid + "&share_openid=" + share_openid + "&share_unionid=" + share_unionid + "&headphotourl=" + headphotourl + "&nick_name=" + nick_name;
+                    xmlhttp.open("get", urllet, true);
+                    xmlhttp.send();
+                }
+                function callbackshare() {
+                    if (xmlhttp.readyState == 4) {
+                        if (xmlhttp.status == 200) {
+                            var response = xmlhttp.responseText;
+                            jsonshare = JSON.parse(response);
+                            appId = jsonshare.appId;
+                            nonceStr = jsonshare.nonceStr;
+                            timestamp = jsonshare.timestamp;
+                            signature = jsonshare.signature;
+                            open();
+                        }
+                    }
+                }
+            }
+
+            //分享?
+            function open() {
+                wx.config({
+                    appId: appId,
+                    timestamp: timestamp,
+                    nonceStr: nonceStr,
+                    signature: signature,
+                    jsApiList: [
+                        'checkJsApi',
+                        'openLocation',
+                        'getLocation',
+                        'onMenuShareTimeline',
+                        'onMenuShareAppMessage'] // 功能列表，我们要使用JS-SDK的什么功能
+                });
+                // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在 页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready 函数中。
+                wx.ready(function() {
+                    wx.onMenuShareTimeline({
+                        title: '快来激活幸运转盘，免费包间房卡等你来拿', // 分享标题
+                        link: data_host + "/choujiang/index.html?share_openid=" + openid + "&share_unionid=" + unionid,
+                        imgUrl: data_host + "/download/js/icon.png", // 分享图标
+                        success: function(data) {
+                            $(".mengban").hide();
+                            $.ajax({
+                                type: 'get',
+                                url: host + '/manager/turn_table.php',
+                                data: {'act': 'share', 'openid': openid, 'unionid': unionid},
+                                dataType: 'JSON', //here
+                                success: function(data) {
+                                },
+                                error: function(data) {
+                                }
+                            });
+                        }
+                    });
+                    // 获取“分享给朋友”按钮点击状态及自定义分享内容接口
+                    wx.onMenuShareAppMessage({
+                        title: '快来激活幸运转盘，免费包间房卡等你来拿', // 分享标题
+                        desc: "《豪麦齐河棋牌》最好玩的麻将，纯正地方语音，等你来下载！", // 分享描述
+                        link: data_host + "/choujiang/index.html?share_openid=" + openid + "&share_unionid=" + unionid,
+                        imgUrl: data_host + "/download/js/icon.png", // 分享图标
+                        type: 'link', // 分享类型,music、video或link，不填默认为link
+                        success: function(data) {
+                            $(".mengban").hide();
+                            $.ajax({
+                                type: 'get',
+                                url: host + '/manager/turn_table.php',
+                                data: {'act': 'share', 'openid': openid, 'unionid': unionid},
+                                dataType: 'JSON', //here
+                                success: function(data) {
+                                },
+                                error: function(data) {
+                                    //alert('网络连接失败，请稍后再试');
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+        </script>
+    </body>
+</html>
