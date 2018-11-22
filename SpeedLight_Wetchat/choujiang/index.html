@@ -8,7 +8,7 @@
         <link href="css/style.css" rel="stylesheet" type="text/css"/>
     </head>
     <body style="background-color:#000;">
-        <div class="mengban" style="display: none;"></div>
+        <!-- <div class="mengban" style="display: none;"></div> -->
         <!-- <div id="home" class="bg" style="display: none;"> -->
         <div id="home" class="bg">
 
@@ -16,7 +16,8 @@
             <div id="header" class="head">
                 <div class="left"><img src="images/xzp.png" alt=""/></div>
                 <span class="sum">1</span>
-                <div class="right"><img src="images/yxgz.png" alt="" border="0" usemap="#Map"/>
+                <div class="right">
+                    <img src="images/yxgz.png" alt="" border="0" usemap="#Map"/>
                     <map name="Map">
                         <!-- 规则按钮 -->
                         <area shape="rect" coords="69,-11,137,29" href="javascript:showPopupMessage('myrule');">
@@ -26,21 +27,22 @@
 
             <div id="ltpanel" class="panel"></div>
 
-            <div class="activate">
-            <ul>
-                <li id="header0">
-                    <img src="images/txw.png" alt="" class="c_1"/><br/>
-                    <span class="c_2">等待激活</span>
-                </li>
-                <li id="header1">
-                    <img src="images/txw.png" alt="" class="c_1"/><br/>
-                    <span class="c_2">等待激活</span>
-                </li>
-                <li id="header2">
-                    <img src="images/txw.png" alt="" class="c_1"/><br/>
-                    <span class="c_2">等待激活</span>
-                </li>
-            </ul>
+            <!-- <div class="activate">
+                <ul>
+                    <li id="header0">
+                        <img src="images/txw.png" alt="" class="c_1"/><br/>
+                        <span class="c_2">等待激活</span>
+                    </li>
+                    <li id="header1">
+                        <img src="images/txw.png" alt="" class="c_1"/><br/>
+                        <span class="c_2">等待激活</span>
+                    </li>
+                    <li id="header2">
+                        <img src="images/txw.png" alt="" class="c_1"/><br/>
+                        <span class="c_2">等待激活</span>
+                    </li>
+                </ul>
+            </div> -->
         </div>
 
         <!-- 游戏规则 -->
@@ -50,17 +52,14 @@
                 <p>一、活动时间</p>
                 <p>长期有效</p>
                 <p>二、活动对象</p>
-                <p>“永修麻将”的微信公众号关注用户。</p>
+                <p>“光速课堂总部”的微信公众号关注用户。</p>
                 <p>三、活动规则</p>
                 <p>1.玩家通过点击“Go”启动转盘，获得幸运奖励。</p>
-                <p>2.玩家可通过收集麻将牌张按“刻子”“顺子”“杠子”要求来兑换房卡奖励。</p>
-                <p>3.若玩家获得“×2”，即玩家下次可获得双倍奖励。</p>
-                <p>4.每个玩家分享成功并成功被好友激活，可增加一次游戏机会；每日最多可被好友激活三次。</p>
-                <p>5.在法律允许的范围内，本次活动最终解释权归我方所有。</p>
+                <p>2.每个玩家分享成功并成功被好友激活，可增加一次游戏机会；每日最多可被好友激活三次。</p>
+                <p>3.在法律允许的范围内，本次活动最终解释权归我方所有。</p>
                 <p>四、奖品发放</p>
-                <p>1.已注册游戏的玩家，获得的房卡奖励会立即发送至玩家账号上。</p>
-                <p>2.未注册游戏的玩家，获得的房卡奖励会暂时记录保存，直至玩家注册游戏并随后发放。</p>
-                <p>3.若奖励发放出现问题，可以联系后台客服与之解决。</p>
+                <p>1.已注册游戏的玩家，获得的奖励联系光速课堂。</p>
+                <p>2.若奖励发放出现问题，可以联系光速课堂。</p>
             </div>
         </div>
 
@@ -101,9 +100,11 @@
             $("body").css(getVendorPrefix() + "Transform-origin", "0 0");
             $("body").css("width", "320px");
             document.body.style.cssText += ';Transform: scale(' + this.scale + ');Transform-origin: 0 0;';
-			var host = "http://qyqihehoutai63254315.lightspeedgame.cn/qihe";
-			var data_host="http://qyqihexiazai202542215.lightspeedgame.cn/qihe";
-             //var host = "http://192.168.0.106/H5/MJbackup/jinxian_MJ/Trunk/mysql_connectdata";
+            //	var host = "http://qyqihehoutai63254315.lightspeedgame.cn/qihe";
+            //	var data_host="http://qyqihexiazai202542215.lightspeedgame.cn/qihe";
+            var host = "http://192.168.1.186/choujiang";
+            var data_host="127.0.0.1/choujiang";
+            //var host = "http://192.168.0.106/H5/MJbackup/jinxian_MJ/Trunk/mysql_connectdata";
             //console.log(location.search);
             function GetUrlParms()
             {
@@ -207,9 +208,14 @@
             // 第二个是用来旋转的圆盘（指针不动）
             var panel = new PanelLotery({
                 length: 6,
-                el: '#ltpanel'
+                el: '#ltpanel',
+                // sx:1,//开始抽奖按钮x坐标
+                // sy:0,//开始抽奖按钮y坐标
             });
             
+            // 0 指向二等奖和三等奖的中间
+            panel.playto(0);  // 4.5 一等奖， 5.5 二等奖 0.5 三等奖
+
             // 开始抽奖的点击事件
             $('.panel-btn').on('click', function(event) {
                 
@@ -218,6 +224,7 @@
                     return;
 
                 console.log("Go!");
+				//alert(host + '/manager/turn_table.php?'+'openid='+openid+'&act=turntable_request'+'&unionid='+unionid+'&nickname='+nick_name);
                 $.ajax({
                     type: 'get',
                     url: host + '/manager/turn_table.php',
@@ -226,18 +233,14 @@
                     cache: false,
                     success: function(o) {
                         if (o.result == 0) {
+						    //alert(o.turntable_type + "最后一位数表示得了几等奖");
                             var numbel = parseInt(o.turntable_type);
-                            if (numbel == 0 && o.turntable_id == 0)
+                            if (o.turntable_type == 0)
                             {
-                                if (o.number == 4) {
-                                    //$(".close_xxcy").attr("href","javascript:chioe(0);");
-                                    $(".xxcy").html("<p>亲，您的转盘机会已达上限，请明天再来~</p>");
-                                    $("#xxcy-main").show();
-                                } else {
+                               
                                     $(".close_xxcy").attr("href", "javascript:chioe(1);");
                                     $(".xxcy").html("<p>亲，您已经没有次数了，快去完成任务增加抽奖次数吧~</p>");
                                     $("#xxcy-main").show();
-                                }
                             } else {
                                 // 转动成功
                                 var time = parseInt($(".sum").text()) - 1;
@@ -245,12 +248,32 @@
                                     time = 0;
                                 }
                                 $(".sum").text(time);
-                                var n = parseInt(numbel.toString().substring(3, 4))-1;
-                                console.log(n);
+                                var n = parseInt(numbel.toString().substring(2)-1); //.substring(3, 4))-1;
+                                console.log(n + "等价");
                                 panel.playto(n, function() {
                                     //奖励 - 具体奖励判断
-                                    if (n == 1) {
-                                        $(".xxcy").html("<p>恭喜您!获得一等奖！</p>");
+                                    if (n == 0) {
+                                        $(".xxcy").html("<p>恭喜您!获得一等奖 樱桃机械键盘！</p>");
+                                        $("#xxcy-main").show();
+                                    }
+                                    else if(n == 1) {
+                                        $(".xxcy").html("<p>恭喜您!获得二等奖 普通机械键盘一部！</p>");
+                                        $("#xxcy-main").show();
+                                    }
+                                    else if(n == 2) {
+                                        $(".xxcy").html("<p>恭喜您!获得三等奖 普通键盘一部！</p>");
+                                        $("#xxcy-main").show();
+                                    }
+                                    else if(n == 3) {
+                                        $(".xxcy").html("<p>恭喜您!获得四等奖 欧莱雅口红三支！</p>");
+                                        $("#xxcy-main").show();
+                                    }
+                                    else if(n == 4) {
+                                        $(".xxcy").html("<p>恭喜您!获得五等奖 欧莱雅口红两支！</p>");
+                                        $("#xxcy-main").show();
+                                    }
+									else if(n == 5) {
+                                        $(".xxcy").html("<p>恭喜您!获得六等奖 欧莱雅口红一支！</p>");
                                         $("#xxcy-main").show();
                                     }
                                 });
@@ -361,7 +384,7 @@
                 }
             }
 
-            // 加载?
+            // 开始的时候请求剩余抽奖次数
             function onload() {
                 $.ajax({
                     type: 'get',
@@ -374,15 +397,19 @@
                         {
                             $(".sum").text(o.times);
                         }
+						else{
+							$(".sum").text("数据错误");
+						}
                     },
                     error: function() {
-                        alert("请求超时，请稍后再试！");
+                        alert("进入页面请求剩余次数超时，请稍后再试！");
                     }
                 });
             }
 
             //麻将数据
             function mahjong() {
+			/*
                 $.ajax({
                     type: 'get',
                     url: host + '/manager/turn_table.php',
@@ -408,6 +435,7 @@
                         alert("请求超时，请稍后再试！");
                     }
                 });
+				*/
             }
 
             //兑换
@@ -486,6 +514,7 @@
 
             //激活的数据
             function activation() {
+			/*
                 $.ajax({
                     type: 'get',
                     url: host + '/manager/turn_table.php',
@@ -515,6 +544,7 @@
                         alert("请求超时，请稍后再试！");
                     }
                 });
+				*/
             }
 
             //分享
